@@ -1,6 +1,5 @@
 import axios from "axios";
 const FormData = require("form-data");
-const fs = require("fs");
 import { BASE_URL } from "@env";
 
 const BASE_URL_TRACK = `${BASE_URL}/track`;
@@ -69,19 +68,22 @@ const deleteByRange = async (min, max) => {
 };
 
 /**
- * NOTE: filePath includes the name of the file
+ * NOTE: filePath NOT includes the name of the file
  */
 const deleteByFile = async (filePath) => {
   let data = new FormData();
 
-  data.append("file", fs.createReadStream(filePath));
+  data.append("file", {
+    uri: filePath,
+    type: "text/txt",
+    name: "summary.txt",
+  });
 
   let config = {
     method: "delete",
-    maxBodyLength: Infinity,
     url: `${BASE_URL_TRACK}/by-file`,
     headers: {
-      ...data.getHeaders(),
+      "Content-Type": "multipart/form-data",
     },
     data: data,
   };
